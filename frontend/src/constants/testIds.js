@@ -1,0 +1,20 @@
+export const HOME = { emergentLink: "home-emergent-link" };
+export const IDS = {
+  rolePatient: "role-patient-btn",
+  roleDoctor: "role-doctor-btn",
+  startDemo: "start-demo-btn",
+  emergencySOS: "emergency-sos-btn",
+  langSwitcher: "language-switcher",
+  a11yOpen: "a11y-open-btn",
+  patientLoginSubmit: "patient-login-submit",
+  patientDemoLogin: "patient-demo-login",
+  doctorLoginSubmit: "doctor-login-submit",
+  doctorDemoLogin: "doctor-demo-login",
+  uploadDischarge: "upload-discharge-btn",
+  confirmCarePlan: "confirm-care-plan-btn",
+  inviteFamily: "invite-family-btn",
+  pillVerify: "pill-verify-btn",
+  otcCheck: "otc-check-btn",
+  shareDoctor: "share-doctor-btn",
+  logout: "logout-btn",
+};

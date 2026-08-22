@@ -1,0 +1,124 @@
+{
+  "theme_and_context": {
+    "app_type": "hybrid_fullstack",
+    "personas": {
+      "patient": "Warm, friendly, low-cognitive load, elderly-friendly, highly accessible. Focuses on clarity and anxiety reduction.",
+      "doctor": "Clinical, information-dense, analytical. Focuses on efficiency, anomaly detection, and population/patient context switching."
+    },
+    "global_theme": "Dual-mode (Patient prefers Light, Doctor prefers Dark/Light dense).",
+    "forbidden": ["#1B93A4", "transparent backgrounds over content", "Inter font for headings"]
+  },
+  "colors": {
+    "primary": {
+      "DEFAULT": "#0F4C5C",
+      "description": "Deep Teal. Used for primary actions, prominent text, and trustworthy anchors."
+    },
+    "secondary": {
+      "DEFAULT": "#48CAE4",
+      "description": "Soft Cyan. Used for active states, subtle highlights, and informational badges."
+    },
+    "accent": {
+      "DEFAULT": "#F4A261",
+      "description": "Warm Sand/Terracotta. Used for human warmth in patient UI and 'attention needed' warnings."
+    },
+    "semantic": {
+      "critical": "#E63946",
+      "warning": "#F4A261",
+      "success": "#2A9D8F",
+      "info": "#48CAE4"
+    },
+    "background": {
+      "patient": "#FDFBF7",
+      "doctor": "#F8FAFC"
+    },
+    "surface": {
+      "patient": "#FFFFFF",
+      "doctor": "#FFFFFF"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "patient_heading": "Outfit, sans-serif",
+      "doctor_heading": "IBM Plex Sans, sans-serif",
+      "body": "Hind, sans-serif",
+      "accessibility": "OpenDyslexic, sans-serif"
+    },
+    "scales": {
+      "h1": "text-4xl sm:text-5xl tracking-tight leading-none",
+      "h2": "text-2xl sm:text-3xl tracking-tight",
+      "body_patient": "text-lg md:text-xl leading-relaxed",
+      "body_doctor": "text-sm md:text-base leading-snug"
+    }
+  },
+  "layouts": {
+    "patient_recovery_hub": {
+      "type": "Bento Grid Mode A",
+      "classes": "grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 p-6 md:p-8",
+      "structure": "Hero block (NOW) spans 8 cols. Timeline (UPCOMING) spans 4 cols tall. Medicine (NEXT) spans 4 cols."
+    },
+    "doctor_command_desk": {
+      "type": "High Density Grid Mode B",
+      "classes": "grid grid-cols-1 md:grid-cols-4 gap-4 p-4",
+      "structure": "Sidebar navigation (1 col). Main content (3 cols). Heavy use of border-collapse and 1px borders."
+    }
+  },
+  "components": {
+    "buttons": {
+      "patient": "rounded-full min-h-[48px] px-8 text-lg font-medium shadow-md transition-transform hover:-translate-y-1",
+      "doctor": "rounded-md min-h-[36px] px-4 text-sm font-semibold border transition-colors hover:bg-slate-50"
+    },
+    "cards": {
+      "patient": "rounded-2xl bg-white shadow-lg border border-teal-900/5 p-6",
+      "doctor": "rounded-lg bg-white border border-slate-200 p-4 shadow-sm"
+    },
+    "badges": {
+      "patient": "rounded-full px-4 py-1 text-sm font-medium inline-flex items-center gap-2",
+      "doctor": "rounded px-2 py-0.5 text-xs font-mono border inline-flex items-center gap-1"
+    }
+  },
+  "motion": {
+    "ai_extraction": "Framer Motion scanning line overlay (cyan-500/30 box moving top to bottom infinitely over document) with skeleton text reveals.",
+    "staggered_list": "Framer Motion variants: initial opacity-0 translate-y-4, animate to opacity-100 translate-y-0, staggerChildren 0.1s.",
+    "accessibility": "Wrap all motion in 'prefers-reduced-motion: no-preference' media query checks."
+  },
+  "accessibility": {
+    "contrast": "Ensure minimum 4.5:1 ratio (APCA preferred). Do NOT use color alone to convey meaning; pair with icons (e.g., triangle for warning).",
+    "touch_targets": "Minimum 48x48 pixels for all interactive elements in Patient UI.",
+    "testing": "All interactive elements MUST have descriptive `data-testid` attributes (e.g., `data-testid=\"login-submit-btn\"`)."
+  },
+  "media": {
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1580471260026-2a8acbc7c7a7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHw0fHxpbmRpYW4lMjBlbGRlcmx5JTIwcGF0aWVudCUyMHNtaWxpbmd8ZW58MHx8fHwxNzg3NDIwNzE4fDA&ixlib=rb-4.1.0&q=85",
+        "category": "Patient Hero / Avatar",
+        "description": "Smiling elderly Indian woman, warm and reassuring"
+      },
+      {
+        "url": "https://images.pexels.com/photos/5888168/pexels-photo-5888168.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "category": "Doctor Profile",
+        "description": "Indian doctor in scrubs, professional"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1562243061-204550d8a2c9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjh8MHwxfHNlYXJjaHwzfHxtZWRpY2luZSUyMHBpbGxzJTIwcGhhcm1hY3l8ZW58MHx8fHwxNzg3NDIwNzE4fDA&ixlib=rb-4.1.0&q=85",
+        "category": "Medication Tracker",
+        "description": "Prescription bottle and capsules"
+      }
+    ],
+    "icons": "Use 'lucide-react' for crisp, accessible icons."
+  },
+  "instructions_to_main_agent": [
+    "Strictly differentiate the visual density between Patient and Doctor views.",
+    "Do NOT use HTML native date/select inputs; use Shadcn equivalents configured for large touch targets.",
+    "Ensure 'What Changed?' continuity timeline uses clear 'before/after' semantic coloring.",
+    "Implement the Accessibility Panel as a floating widget with context API to toggle global CSS classes (e.g., .dyslexia-mode, .high-contrast-mode).",
+    "Never use purely transparent overlays over text."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Do not use generic centered layouts or simplistic gradients.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Do not apply 'transition: all'. Apply specific transitions like 'transition: transform 0.2s ease, opacity 0.2s ease'.",
+    "DO NOT center align the app container (.App { text-align: center; }).",
+    "Never use AI assistant Emoji characters for icons.",
+    "Use 'sonner' for toast notifications."
+  ]
+}
