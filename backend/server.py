@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List
 import uuid
 from datetime import datetime, timezone
+from pill_verification.router import pill_router
 
 
 ROOT_DIR = Path(__file__).parent
@@ -21,9 +22,12 @@ db = client[os.environ['DB_NAME']]
 
 # Create the main app without a prefix
 app = FastAPI()
+app.state.db = db   
 
 # Create a router with the /api prefix
+api_router.include_router(pill_router)
 api_router = APIRouter(prefix="/api")
+
 
 
 # Define Models
