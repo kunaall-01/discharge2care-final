@@ -1,0 +1,84 @@
+{
+  "drugs": [
+    {
+      "id": "para500",
+      "brand_names": ["Crocin", "Dolo 650", "Calpol", "Paracip", "Tylenol"],
+      "salt_composition": "Paracetamol",
+      "strength": "500mg",
+      "category": "Analgesic / Antipyretic",
+      "uses": ["Fever", "Mild to moderate pain", "Headache"],
+      "side_effects": ["Nausea", "Rash (rare)", "Liver damage (overdose/long-term high dose)"],
+      "common_dosage": "1 tablet every 4-6 hours, max 4g/day for adults"
+    },
+    {
+      "id": "amox500",
+      "brand_names": ["Amoxil", "Novamox", "Mox"],
+      "salt_composition": "Amoxicillin",
+      "strength": "500mg",
+      "category": "Antibiotic (Penicillin group)",
+      "uses": ["Bacterial infections", "Respiratory tract infections", "UTI"],
+      "side_effects": ["Diarrhea", "Nausea", "Allergic reaction/rash", "Yeast infection"],
+      "common_dosage": "1 capsule every 8 hours for 5-7 days"
+    },
+    {
+      "id": "azith500",
+      "brand_names": ["Azithral", "Zithromax", "Azee"],
+      "salt_composition": "Azithromycin",
+      "strength": "500mg",
+      "category": "Antibiotic (Macrolide)",
+      "uses": ["Respiratory infections", "Skin infections", "Typhoid"],
+      "side_effects": ["Stomach upset", "Diarrhea", "Headache", "QT prolongation (rare)"],
+      "common_dosage": "1 tablet once daily for 3-5 days"
+    },
+    {
+      "id": "ibu400",
+      "brand_names": ["Brufen", "Advil", "Ibugesic"],
+      "salt_composition": "Ibuprofen",
+      "strength": "400mg",
+      "category": "NSAID",
+      "uses": ["Pain relief", "Inflammation", "Fever"],
+      "side_effects": ["Stomach irritation", "Heartburn", "Dizziness", "Increased bleeding risk"],
+      "common_dosage": "1 tablet every 6-8 hours after food"
+    },
+    {
+      "id": "pantop40",
+      "brand_names": ["Pantop", "Pantocid", "Protonix"],
+      "salt_composition": "Pantoprazole",
+      "strength": "40mg",
+      "category": "Proton Pump Inhibitor",
+      "uses": ["Acidity", "GERD", "Peptic ulcer"],
+      "side_effects": ["Headache", "Diarrhea", "Vitamin B12 deficiency (long-term use)"],
+      "common_dosage": "1 tablet daily before breakfast"
+    },
+    {
+      "id": "metf500",
+      "brand_names": ["Glycomet", "Glucophage"],
+      "salt_composition": "Metformin",
+      "strength": "500mg",
+      "category": "Antidiabetic (Biguanide)",
+      "uses": ["Type 2 Diabetes management"],
+      "side_effects": ["GI upset", "Metallic taste", "Lactic acidosis (rare, serious)"],
+      "common_dosage": "1 tablet twice daily with meals"
+    },
+    {
+      "id": "atorva10",
+      "brand_names": ["Atorva", "Lipitor", "Storvas"],
+      "salt_composition": "Atorvastatin",
+      "strength": "10mg",
+      "category": "Statin (lipid-lowering)",
+      "uses": ["High cholesterol", "Cardiovascular risk reduction"],
+      "side_effects": ["Muscle pain", "Liver enzyme elevation", "Digestive issues"],
+      "common_dosage": "1 tablet once daily at night"
+    },
+    {
+      "id": "ceti10",
+      "brand_names": ["Cetzine", "Zyrtec", "Alerid"],
+      "salt_composition": "Cetirizine",
+      "strength": "10mg",
+      "category": "Antihistamine",
+      "uses": ["Allergies", "Itching", "Hay fever"],
+      "side_effects": ["Drowsiness", "Dry mouth", "Fatigue"],
+      "common_dosage": "1 tablet once daily"
+    }
+  ]
+}
