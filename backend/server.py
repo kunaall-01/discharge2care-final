@@ -25,7 +25,7 @@ app = FastAPI()
 app.state.db = db   
 
 # Create a router with the /api prefix
-api_router.include_router(pill_router)
+
 api_router = APIRouter(prefix="/api")
 
 
@@ -69,6 +69,7 @@ async def get_status_checks():
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
     
     return status_checks
+    api_router.include_router(pill_router)
 
 # Include the router in the main app
 app.include_router(api_router)
