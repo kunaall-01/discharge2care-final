@@ -10,15 +10,22 @@ from typing import List
 import uuid
 from datetime import datetime, timezone
 from pill_verification.router import pill_router
+from discharge.router import discharge_router
 
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
+mongo_url = os.environ.get('MONGO_URL')
+db_name = os.environ.get('DB_NAME')
+if not mongo_url or not db_name:
+    raise RuntimeError(
+        "MONGO_URL and DB_NAME must be set. See backend/.env.example."
+    )
+
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db = client[db_name]
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -69,15 +76,24 @@ async def get_status_checks():
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
     
     return status_checks
-    api_router.include_router(pill_router)
+
+
+api_router.include_router(pill_router)
+api_router.include_router(discharge_router)
 
 # Include the router in the main app
 app.include_router(api_router)
 
+cors_origins = [
+    origin.strip()
+    for origin in os.environ.get('CORS_ORIGINS', '').split(',')
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )

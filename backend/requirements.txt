@@ -14,6 +14,7 @@ tzdata>=2024.2
 motor==3.3.1
 pytest>=8.0.0
 pytest-xdist>=3.6.0
+httpx>=0.27.0,<0.28
 black>=24.1.1
 isort>=5.13.2
 flake8>=7.0.0
@@ -25,11 +26,7 @@ numpy>=1.26.0
 python-multipart>=0.0.9
 jq>=1.6.0
 typer>=0.9.0
-emergentintegrations>=0.2.0
 pytesseract==0.3.13
 opencv-python-headless==4.10.0.84
 Pillow==10.4.0
-numpy==1.26.4
-python-multipart==0.0.9
-emergentintegrations @ git+https://github.com/kunaall-01/emergentintegrations.git
-
+pymupdf>=1.24.0

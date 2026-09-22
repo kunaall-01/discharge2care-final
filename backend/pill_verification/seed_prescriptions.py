@@ -38,6 +38,19 @@ SAMPLE_PRESCRIPTIONS = [
             {"drug_id": "metf500", "salt_composition": "Metformin", "strength": "500mg", "dosage": "1-0-1", "duration_days": 30},
         ],
     },
+    # patient_id matches demoPatient.id in frontend/src/data/mockData.js, so the
+    # deployed frontend resolves a prescription for its logged-in demo user.
+    {
+        "prescription_id": "RX1003",
+        "patient_id": "pt-001",
+        "patient_name": "Ramesh Sharma",
+        "doctor_name": "Dr. Anand Verma",
+        "date_issued": "2026-02-12",
+        "medicines": [
+            {"drug_id": "pantop40", "salt_composition": "Pantoprazole", "strength": "40mg", "dosage": "1-0-0", "duration_days": 10},
+            {"drug_id": "para500", "salt_composition": "Paracetamol", "strength": "500mg", "dosage": "1-0-1", "duration_days": 5},
+        ],
+    },
 ]
 
 

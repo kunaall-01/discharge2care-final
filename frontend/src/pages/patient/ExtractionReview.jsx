@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import StatusBadge from "@/components/shared/StatusBadge";
-import { Pill, FlaskConical, CalendarDays, ClipboardList, Edit3, Flag, Check, Eye, ShieldAlert } from "lucide-react";
+import { confirmDischargeSummary, errorMessage } from "@/lib/api";
+import { Pill, FlaskConical, CalendarDays, ClipboardList, Edit3, Flag, Check, Eye, ShieldAlert, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ExtractionReview() {
-  const { extractionDraft, update } = useApp();
+  const { extractionDraft, update, activateCarePlan, addAudit, patient } = useApp();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(null); // {section, idx}
+  const [saving, setSaving] = useState(false);
   const draft = extractionDraft;
 
   if (!draft) {
@@ -32,7 +34,45 @@ export default function ExtractionReview() {
   };
 
   const allConfirmed = draft.medicines.every((m) => m.confirmed);
-  const proceed = () => { if (!allConfirmed) { toast.warning("Please confirm all medicines first."); return; } navigate("/patient/care-plan"); };
+
+  // Promote the reviewed extraction into the live plan state. Queued before
+  // activateCarePlan() so it keeps these items instead of falling back to seed data.
+  const activatePlan = () => {
+    update({
+      medicines: draft.medicines,
+      tests: draft.tests,
+      appointments: draft.appointments,
+      careTasks: draft.careTasks,
+    });
+    activateCarePlan();
+  };
+
+  const proceed = async () => {
+    if (!allConfirmed) { toast.warning("Please confirm all medicines first."); return; }
+
+    // Drafts without a draft_id came from local demo data, not the backend.
+    if (!draft.draft_id) { activatePlan(); navigate("/patient/care-plan"); return; }
+
+    setSaving(true);
+    try {
+      await confirmDischargeSummary(draft.draft_id, {
+        patient_id: patient?.id,
+        medicines: draft.medicines,
+        tests: draft.tests,
+        appointments: draft.appointments,
+        careTasks: draft.careTasks,
+        notes: draft.notes || "",
+      });
+      activatePlan();
+      addAudit("Care plan confirmed by patient");
+      toast.success("Care plan activated");
+      navigate("/patient/care-plan");
+    } catch (err) {
+      toast.error(errorMessage(err));
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -104,9 +144,9 @@ export default function ExtractionReview() {
       </Group>
 
       <div className="flex flex-wrap items-center gap-3 pt-2">
-        <Button variant="outline" onClick={() => navigate("/patient/discharge")} data-testid="reupload-btn">Re-upload document</Button>
-        <Button data-testid="proceed-careplan-btn" onClick={proceed} className="btn-primary">
-          Proceed to activate care plan
+        <Button variant="outline" disabled={saving} onClick={() => navigate("/patient/discharge")} data-testid="reupload-btn">Re-upload document</Button>
+        <Button data-testid="proceed-careplan-btn" onClick={proceed} disabled={saving} className="btn-primary">
+          {saving ? <><Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> Activating…</> : "Proceed to activate care plan"}
         </Button>
       </div>
 

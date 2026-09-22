@@ -1,9 +1,9 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "@/contexts/AppContext";
-import { extractionResult } from "@/data/mockData";
-import { Upload, FileText, Image as ImageIcon, X, CheckCircle2, Loader2 } from "lucide-react";
+import { extractDischargeSummary, errorMessage } from "@/lib/api";
+import { Upload, FileText, Image as ImageIcon, X, CheckCircle2, Loader2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 const STEPS = [
@@ -16,39 +16,79 @@ const STEPS = [
   "Preparing review",
 ];
 
+const SAMPLE_DOC_PATH = `${process.env.PUBLIC_URL}/samples/discharge-summary.pdf`;
+
 export default function DischargeUpload() {
-  const { update, addAudit } = useApp();
+  const { update, addAudit, patient } = useApp();
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [drag, setDrag] = useState(false);
   const [step, setStep] = useState(-1);
+  const [failure, setFailure] = useState(null);
+  const [warnings, setWarnings] = useState([]);
   const inputRef = useRef(null);
+  const tickerRef = useRef(null);
+
+  const stopTicker = useCallback(() => {
+    if (tickerRef.current) { clearInterval(tickerRef.current); tickerRef.current = null; }
+  }, []);
+
+  useEffect(() => stopTicker, [stopTicker]);
 
   const onSelect = useCallback((f) => {
     if (!f) return;
     const okType = /pdf|image\//.test(f.type) || /\.(pdf|png|jpg|jpeg|heic)$/i.test(f.name);
     if (!okType) { toast.error("Please upload a PDF or image file."); return; }
+    setFailure(null);
+    setWarnings([]);
     setFile(f);
   }, []);
 
-  const startProcess = () => {
+  const startProcess = async () => {
+    if (!file) { toast.error("Choose a document first."); return; }
+    setFailure(null);
+    setWarnings([]);
     setStep(0);
-    let i = 0;
-    const iv = setInterval(() => {
-      i++;
-      setStep(i);
-      if (i >= STEPS.length - 1) {
-        clearInterval(iv);
-        setTimeout(() => {
-          update({ extractionDraft: extractionResult });
-          addAudit("Discharge summary processed by AI");
-          navigate("/patient/extraction-review");
-        }, 900);
-      }
+
+    // Cosmetic ticker: holds on the second-to-last step until the API responds.
+    let index = 0;
+    stopTicker();
+    tickerRef.current = setInterval(() => {
+      index = Math.min(index + 1, STEPS.length - 2);
+      setStep(index);
     }, 750);
+
+    try {
+      const result = await extractDischargeSummary(file, { patientId: patient?.id });
+      stopTicker();
+      setStep(STEPS.length - 1);
+      setWarnings(result.warnings || []);
+
+      update({ extractionDraft: result });
+      addAudit(`Discharge summary processed (${result.medicines?.length || 0} medicines found)`);
+      setTimeout(() => navigate("/patient/extraction-review"), 900);
+    } catch (err) {
+      stopTicker();
+      const message = errorMessage(err);
+      setStep(-1);
+      setFailure(message);
+      toast.error(message);
+    }
   };
 
-  const useDemoDoc = () => { setFile({ name: "Discharge_Ramesh_Sharma.pdf", type: "application/pdf", size: 214000 }); };
+  const useDemoDoc = async () => {
+    setFailure(null);
+    try {
+      const response = await fetch(SAMPLE_DOC_PATH);
+      if (!response.ok) throw new Error(`sample unavailable (${response.status})`);
+      const blob = await response.blob();
+      setFile(new File([blob], "Discharge_Ramesh_Sharma.pdf", { type: "application/pdf" }));
+    } catch {
+      toast.error("Could not load the sample document.");
+    }
+  };
+
+  const processing = step >= 0;
 
   return (
     <div className="space-y-6">
@@ -57,7 +97,7 @@ export default function DischargeUpload() {
         <p className="mt-2 text-muted-foreground">We'll read your document, extract the important details, and let you review before anything becomes active.</p>
       </div>
 
-      {step === -1 && (
+      {!processing && (
         <div className="grid gap-4 md:grid-cols-3">
           <div className="md:col-span-2 rounded-3xl border border-brand-900/10 bg-white p-6 card-elev">
             <div
@@ -77,6 +117,13 @@ export default function DischargeUpload() {
                 className="mt-2 text-sm font-semibold text-brand-700 underline underline-offset-2">Use sample discharge document</button>
             </div>
 
+            {failure && (
+              <div className="mt-4 flex items-start gap-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive" data-testid="upload-error">
+                <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                <div>{failure}</div>
+              </div>
+            )}
+
             {file && (
               <div className="mt-4 flex items-center justify-between rounded-2xl border bg-white p-4">
                 <div className="flex items-center gap-3">
@@ -85,7 +132,7 @@ export default function DischargeUpload() {
                   </div>
                   <div>
                     <div className="font-medium text-brand-900">{file.name}</div>
-                    <div className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(0)} KB · {file.type || "document"}</div>
+                    <div className="text-xs text-muted-foreground">{((file.size || 0) / 1024).toFixed(0)} KB · {file.type || "document"}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -109,7 +156,7 @@ export default function DischargeUpload() {
         </div>
       )}
 
-      {step >= 0 && (
+      {processing && (
         <div className="grid gap-6 md:grid-cols-2">
           <div className="relative overflow-hidden rounded-3xl border border-brand-900/10 bg-white p-6 card-elev min-h-[400px]">
             <div className="text-xs uppercase tracking-widest text-brand-700">Processing</div>
@@ -138,6 +185,11 @@ export default function DischargeUpload() {
                 ))}
               </AnimatePresence>
             </ol>
+            {warnings.length > 0 && (
+              <div className="mt-5 space-y-2 rounded-xl border border-warm/30 bg-warm/10 p-3 text-xs text-warm">
+                {warnings.map((w) => <div key={w} className="flex items-start gap-1.5"><AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" /> {w}</div>)}
+              </div>
+            )}
           </div>
         </div>
       )}
