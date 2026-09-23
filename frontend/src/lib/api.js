@@ -119,8 +119,42 @@ export async function getCaregiverDashboard(caregiverId) {
   return data;
 }
 
-/** Turn any axios/thrown error into a single-line, user-safe message. */
-export function errorMessage(err) {
+/**
+ * Compare the prescribed medicine with the one the chemist is handing over.
+ * Returns the backend SaltVerificationResult shape:
+ * { verdict_code, is_safe_to_use, salt_analysis, strength_analysis,
+ *   chemist_summary, patient_guidance, source }
+ */
+export async function verifySaltEquivalence({ prescribed, available }) {
+  const side = (m) => ({
+    name: m.name,
+    strength: m.strength || "",
+    form: m.form || "",
+    manufacturer: m.manufacturer || "",
+  });
+  const { data } = await api.post("/chemist/verify", {
+    prescribed_medicine: side(prescribed),
+    available_medicine: side(available),
+  });
+  return data;
+}
+
+/**
+ * Same salt-equivalence check, but the dispensed medicine is read from a
+ * wrapper photo: the backend runs OCR + drug identification, then compares.
+ */
+export async function verifySaltEquivalenceFromPhoto(file, prescribed) {
+  const form = new FormData();
+  form.append("file", file);
+  form.append("prescribed_name", prescribed.name);
+  form.append("prescribed_strength", prescribed.strength || "");
+  form.append("prescribed_form", prescribed.form || "");
+
+  const { data } = await api.post("/chemist/verify-photo", form);
+  return data;
+}
+
+/** Turn any axios/thrown error into a single-line, user-safe message. */export function errorMessage(err) {
   const detail = err?.response?.data?.detail;
   if (detail) return typeof detail === "string" ? detail : JSON.stringify(detail);
   if (err?.code === "ECONNABORTED") return "Request timed out. The server may be cold-starting.";

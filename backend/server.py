@@ -13,6 +13,7 @@ from pill_verification.router import pill_router
 from discharge.router import discharge_router
 from adherence.router import adherence_router
 from caregivers.router import caregiver_router
+from chemist.router import chemist_router
 
 
 ROOT_DIR = Path(__file__).parent
@@ -84,6 +85,7 @@ api_router.include_router(pill_router)
 api_router.include_router(discharge_router)
 api_router.include_router(adherence_router)
 api_router.include_router(caregiver_router)
+api_router.include_router(chemist_router)
 
 # Include the router in the main app
 app.include_router(api_router)

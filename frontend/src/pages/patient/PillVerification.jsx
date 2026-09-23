@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { pillDatabase } from "@/data/mockData";
 import { verifyPill, errorMessage } from "@/lib/api";
+import ChemistVerificationCard from "@/components/chemist/ChemistVerificationCard";
 import { Upload, CheckCircle2, AlertTriangle, HelpCircle, Loader2, PillBottle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -150,6 +151,8 @@ export default function PillVerification() {
           )}
         </div>
       </div>
+
+      <ChemistVerificationCard />
 
       <div className="rounded-3xl border bg-white p-5 card-elev">
         <div className="text-xs font-semibold uppercase tracking-widest text-brand-700 mb-2">Recent checks</div>
