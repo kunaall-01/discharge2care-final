@@ -185,6 +185,9 @@ async def confirm_discharge_summary(
                         "dosage": medicine.dose or medicine.frequency,
                         "frequency": medicine.frequency,
                         "duration": medicine.duration,
+                        # Adherence expands these into per-day dose slots.
+                        "timing": list(medicine.timing or []),
+                        "start_date": medicine.startDate or "",
                     }
                     for medicine in plan.medicines
                 ],

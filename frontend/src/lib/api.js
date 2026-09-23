@@ -44,6 +44,81 @@ export async function confirmDischargeSummary(draftId, plan) {
   return data;
 }
 
+/** Minutes east of UTC for the viewer, e.g. +330 for IST. The backend judges
+ *  "overdue" against the patient's wall clock, not UTC. */
+export function tzOffsetMinutes() {
+  return -new Date().getTimezoneOffset();
+}
+
+/** Today's (or a given day's) dose slots with taken/missed/overdue status. */
+export async function getAdherenceSchedule(patientId, { date } = {}) {
+  const params = { tz_offset_minutes: tzOffsetMinutes() };
+  if (date) params.date = date;
+  const { data } = await api.get(
+    `/adherence/patient/${encodeURIComponent(patientId)}/schedule`,
+    { params }
+  );
+  return data;
+}
+
+/** Record one dose as taken / missed / skipped. */
+export async function recordDose({ patientId, medicineId, medicineName, date, time, status }) {
+  const { data } = await api.post("/adherence/dose", {
+    patient_id: patientId,
+    medicine_id: medicineId,
+    medicine_name: medicineName,
+    date,
+    time,
+    status,
+  });
+  return data;
+}
+
+/** Adherence % and overdue doses over a rolling window. */
+export async function getAdherenceSummary(patientId, { days = 7 } = {}) {
+  const { data } = await api.get(
+    `/adherence/patient/${encodeURIComponent(patientId)}/summary`,
+    { params: { days, tz_offset_minutes: tzOffsetMinutes() } }
+  );
+  return data;
+}
+
+export async function listCaregivers(patientId) {
+  const { data } = await api.get(`/caregivers/patient/${encodeURIComponent(patientId)}`);
+  return data;
+}
+
+export async function linkCaregiver({ patientId, name, relation, phone, email, permissions }) {
+  const { data } = await api.post("/caregivers/", {
+    patient_id: patientId,
+    name,
+    relation,
+    phone: phone || "",
+    email: email || "",
+    permissions: permissions || {},
+  });
+  return data;
+}
+
+export async function updateCaregiver(caregiverId, patch) {
+  const { data } = await api.patch(`/caregivers/${encodeURIComponent(caregiverId)}`, patch);
+  return data;
+}
+
+export async function removeCaregiver(caregiverId) {
+  const { data } = await api.delete(`/caregivers/${encodeURIComponent(caregiverId)}`);
+  return data;
+}
+
+/** What a given caregiver is allowed to see, plus live adherence/overdue. */
+export async function getCaregiverDashboard(caregiverId) {
+  const { data } = await api.get(
+    `/caregivers/${encodeURIComponent(caregiverId)}/dashboard`,
+    { params: { tz_offset_minutes: tzOffsetMinutes() } }
+  );
+  return data;
+}
+
 /** Turn any axios/thrown error into a single-line, user-safe message. */
 export function errorMessage(err) {
   const detail = err?.response?.data?.detail;
