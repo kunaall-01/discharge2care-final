@@ -4,7 +4,7 @@ const rawBase = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 export const api = axios.create({
   baseURL: `${rawBase.replace(/\/+$/, "")}/api`,
-  timeout: 45000,
+  timeout: 90000,
 });
 
 /**

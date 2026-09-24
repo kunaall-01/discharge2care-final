@@ -90,11 +90,31 @@ api_router.include_router(chemist_router)
 # Include the router in the main app
 app.include_router(api_router)
 
-cors_origins = [
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Known production origins — always allowed even if CORS_ORIGINS is unset.
+_DEFAULT_ORIGINS = [
+    "https://discharge2care-final.onrender.com",
+]
+
+_env_origins = [
     origin.strip()
     for origin in os.environ.get('CORS_ORIGINS', '').split(',')
     if origin.strip()
 ]
+
+cors_origins = list(dict.fromkeys(_env_origins + _DEFAULT_ORIGINS))  # deduplicated, ordered
+
+if not _env_origins:
+    logger.warning(
+        "CORS_ORIGINS env var is empty — falling back to built-in defaults: %s",
+        _DEFAULT_ORIGINS,
+    )
 
 app.add_middleware(
     CORSMiddleware,
@@ -103,13 +123,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
